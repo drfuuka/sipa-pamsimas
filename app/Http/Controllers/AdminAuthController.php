@@ -3,18 +3,19 @@
 namespace App\Http\Controllers;
 
 use App\Models\AccMasyarakat;
+use App\Models\AccPetugas;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
-class AuthController extends Controller
+class AdminAuthController extends Controller
 {
     public function showLoginForm()
     {
-        if (Auth::guard('admin')->user()) {
-            Auth::guard('admin')->logout();
+        if (Auth::user()) {
+            Auth::logout();
         }
-        return view('auth.masyarakat.login');
+        return view('auth.petugas.login');
     }
 
     public function login(Request $request)
@@ -24,7 +25,7 @@ class AuthController extends Controller
             'password' => ['required'],
         ]);
  
-        if (Auth::guard('admin')->user() || Auth::attempt($credentials)) {
+        if (Auth::guard('admin')->attempt($credentials)) {
             $request->session()->regenerate();
  
             return redirect('/');
@@ -37,28 +38,28 @@ class AuthController extends Controller
 
     public function showRegisterForm()
     {
-        if (Auth::guard('admin')->user() || Auth::user()) {
+        if (Auth::guard('admin')->user()) {
             return redirect('/');
         }
-        return view('auth.masyarakat.register');;
+        return view('auth.petugas.register');;
     }
 
     public function register(Request $request)
     {
         $validatedData = $request->validate([
             'name'     => ['required', 'string', 'max:255'],
-            'email'    => ['required', 'string', 'email', 'max:255', 'unique:acc_masyarakat'],
+            'email'    => ['required', 'string', 'email', 'max:255', 'unique:acc_petugas'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
         ]);
 
-        $user = AccMasyarakat::create([
+        $user = AccPetugas::create([
             'name'     => $validatedData['name'],
             'email'    => $validatedData['email'],
             'password' => Hash::make($validatedData['password']),
         ]);
 
         if($user) {
-            return redirect()->route('login.index');
+            return redirect()->route('admin.login.index');
         } else {
             return redirect()->back();
         }
@@ -67,7 +68,7 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
-       Auth::logout();
+       Auth::guard('admin')->logout();
        return redirect('/');
     }
 }

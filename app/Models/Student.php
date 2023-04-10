@@ -31,6 +31,17 @@ class Student extends Model
         'nama_ibu_kandung',
         'nama_wali',
         'user_id',
+        'penghasilan_ortu',
+        'goldar',
+        'foto_profile',
+        'kk',
+        'hobi',
+        'prestasi',
+        'dokumen',
+        'nilai_tes_tulis',
+        'nilai_tes_administrasi',
+        'nilai_tes_quran',
+        'nilai_tes_tajwid',
     ];
 
     public function user()
